@@ -1,12 +1,16 @@
 import { number } from "yup";
 import app from "./app"
 import dotenv from "dotenv";
+import { prismaConnect } from "./config/prisma";
 dotenv.config();
 
 const PORT = Number(process.env.PORT);
 
 const startServer = async () => {
     try {
+
+        await prismaConnect();
+
         await app.listen({ port: PORT }).then(() => {
             console.log(`Server is running on port ${PORT}`);
         });
