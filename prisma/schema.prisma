@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -9,8 +9,8 @@ datasource db {
 }
 
 enum TransactionType {
-  expense
-  income
+  EXPENSE
+  INCOME
 }
 
 model Category {
