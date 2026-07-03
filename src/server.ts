@@ -1,12 +1,10 @@
-import { number } from "yup";
+
 import app from "./app"
-import dotenv from "dotenv";
 import { prismaConnect } from "./config/prisma";
 import { initializeGlobalCategories } from "./services/globalCategories.service";
+import  { env } from "./config/env";
 
-dotenv.config();
-
-const PORT = Number(process.env.PORT);
+const PORT = env.PORT;
 
 const startServer = async () => {
     try {
