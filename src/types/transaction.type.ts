@@ -1,4 +1,5 @@
 import { TransactionType } from "../../generated/prisma";
+import { CategorySummary } from "./category,types";
 
 
 export interface TransactionFilter {
@@ -10,3 +11,12 @@ export interface TransactionFilter {
     type?: TransactionType;
     categoryId?: string;
 }
+
+
+export interface TransactionSumary {
+    totalExpenses: number;
+    totalIncome: number;
+    balance: number;
+    expensesByCategory: CategorySummary[];
+}
+

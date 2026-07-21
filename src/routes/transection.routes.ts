@@ -1,8 +1,9 @@
-import { FastifyInstance } from "fastify";
+import  { FastifyInstance } from "fastify";
 import createTransaction from "../controllers/transaction/createTransaction.controller";
 import { getTransactions } from "../controllers/transaction/getTransactions.controller";
-import zodToJsonSchema from "zod-to-json-schema";
-import { getTransactionsSchema } from "../schemas/transavtion.schema";
+import { getTransactionsSummarySchema } from "../schemas/transavtion.schema";
+import { getTransactionsSummary } from "../controllers/transaction/getTransactionsSummary.controller";
+import { z } from "zod";
 
 
 const transactionRoutes = async (fastify: FastifyInstance) => {
@@ -17,10 +18,17 @@ const transactionRoutes = async (fastify: FastifyInstance) => {
     fastify.route({
         method: "GET",
         url: "/",
-        schema: {
-            querystring: zodToJsonSchema(getTransactionsSchema),
-        },
         handler: getTransactions,
+    });
+
+    // busca de resumo
+    fastify.route({
+        method: "GET",
+        url: "/summary",
+        schema: {
+            querystring: z.toJSONSchema(getTransactionsSummarySchema),
+        },
+        handler: getTransactionsSummary
     });
 }
 
