@@ -1,8 +1,9 @@
 import  { FastifyInstance } from "fastify";
 import createTransaction from "../controllers/transaction/createTransaction.controller";
 import { getTransactions } from "../controllers/transaction/getTransactions.controller";
-import { getTransactionsSchema, getTransactionsSummarySchema } from "../schemas/transavtion.schema";
+import { deleteTransactionSchema, getTransactionsSchema, getTransactionsSummarySchema } from "../schemas/transavtion.schema";
 import { getTransactionsSummary } from "../controllers/transaction/getTransactionsSummary.controller";
+import { deleteTransaction } from "../controllers/transaction/deleteTrasanctions.controller";
 
 
 const transactionRoutes = async (fastify: FastifyInstance) => {
@@ -32,6 +33,16 @@ const transactionRoutes = async (fastify: FastifyInstance) => {
         },
         handler: getTransactionsSummary
     });
+
+    //delete
+    fastify.route({
+        method: "DELETE",
+        url: "/:id",
+        schema: {
+            params: deleteTransactionSchema,
+        },
+        handler: deleteTransaction
+    })
 }
 
 export default transactionRoutes;
