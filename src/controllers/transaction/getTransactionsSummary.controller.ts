@@ -3,10 +3,12 @@ import type { getTransactionsSummaryQuery } from "../../schemas/transavtion.sche
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import prisma from "../../config/prisma";
+import { CategorySummary } from "../../types/category,types";
+import { TransactionType } from "../../../generated/prisma";
+import { array } from "zod";
+import { TransactionSumary } from "../../types/transaction.type";
 
 dayjs.extend(utc);
-
-
 
 
 export const getTransactionsSummary = async (
@@ -31,7 +33,7 @@ export const getTransactionsSummary = async (
     const endDate = dayjs.utc(startDate).endOf("month").toDate();
 
      try {
-        const transaction = await prisma.transaction.findMany({
+        const transactions = await prisma.transaction.findMany({
             where: {
                 userId,
                 date: { gte: startDate, lte: endDate },
@@ -41,7 +43,41 @@ export const getTransactionsSummary = async (
             },
         });
 
-        reply.send(transaction)
+        let totalExpenses = 0;
+        let totalIncome = 0;
+        const groupedExpenses = new Map<string, CategorySummary>();
+
+        for (const transaction of transactions) {
+
+            if ( transaction.type === TransactionType.EXPENSE) {
+
+                const existing = groupedExpenses.get(transaction.categoryId) ?? {
+                    categoryId: transaction.categoryId,
+                    categoryName: transaction.category.name,
+                    categoryColor: transaction.category.color,
+                    amount: 0,
+                    percentage: 0,
+                }
+
+                existing.amount += transaction.amount
+                groupedExpenses.set(transaction.categoryId, existing)
+
+                totalExpenses += transaction.amount;
+        } else {
+            totalIncome += transaction.amount;
+        }
+        
+    }
+        const summary: TransactionSumary = {
+            totalExpenses,
+            totalIncome,
+            balance: Number((totalIncome - totalExpenses).toFixed(2)),
+            expensesByCategory: Array.from(groupedExpenses.values()).map((entry)=> ({
+                ...entry,
+                percentge: Number.parseFloat(((entry.amount / totalExpenses) * 100).toFixed(2))
+            })).sort((a,b) => b.amount - a.amount)
+        }
+        reply.send(summary)
     } catch (error) {
         request.log.error(error,"error ao trazer transações");
         reply.status(500).send({ error: "error do servidor" });
