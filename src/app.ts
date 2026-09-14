@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { validatorCompiler, serializerCompiler, type ZodTypeProvider } from "fastify-type-provider-zod";
 import routes from "./routes/";
 import { env } from "node:process";
@@ -11,6 +12,8 @@ const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+app.register(cors);
 
 app.register(routes, { prefix: "/api" });
 
